@@ -1,2 +1,2 @@
-# backen-service
-gateway backen services providers
+# backend-services
+gateway backend services providers
