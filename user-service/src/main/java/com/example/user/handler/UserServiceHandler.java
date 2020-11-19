@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.user.entity.Result;
 import com.example.user.entity.User;
 import com.example.user.service.IUserService;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
@@ -14,11 +16,14 @@ import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.util.ReferenceCountUtil;
+import io.netty.util.ReferenceCounted;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,14 +110,22 @@ public class UserServiceHandler extends ChannelInboundHandlerAdapter {
         super.exceptionCaught(ctx, cause);
     }
 
-    private Result doService(FullHttpRequest fullRequest){
+    private Result doService(FullHttpRequest fullRequest) throws IOException {
         String uri = fullRequest.uri();
         HttpMethod requestMethod = fullRequest.method();
         Result<User> result =null;
         if(uri.startsWith(URI_USER)){
+           //---------------test coder start-------------
+            printRequetRaw(fullRequest);
+            //---------------test coder end-------------
             //post or put
             if(uri.equals(URI_USER)){
+
+//                ReferenceCountUtil.retain(fullRequest);
                 User user = extractUser(fullRequest);
+                if(user==null){
+                    return null;
+                }
                 if(requestMethod.equals(HttpMethod.PUT)){
                     service.update(user);
                     return Result.buildSuccess("更新成功",String.valueOf(user.getId()));
@@ -123,13 +136,14 @@ public class UserServiceHandler extends ChannelInboundHandlerAdapter {
                 }
             }
             //  /user/{id}
+            String id = uri.substring(URI_USER.length()+1);
             if(requestMethod.equals(HttpMethod.GET)){
-                String id = uri.substring(URI_USER.length());
+
                 User user = service.select(Integer.valueOf(id).intValue());
                 return Result.buildSuccess(user);
             }
             if(requestMethod.equals(HttpMethod.DELETE)){
-                String id = uri.substring(URI_USER.length());
+
                 service.delete(Integer.valueOf(id).intValue());
                 return Result.buildSuccess("删除成功",id);
             }
@@ -138,11 +152,20 @@ public class UserServiceHandler extends ChannelInboundHandlerAdapter {
         return null;
     }
 
+    private void printRequetRaw(FullHttpRequest fullRequest) throws IOException {
+        ByteBuf byteBuf = fullRequest.copy().content();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        while(byteBuf.readableBytes()>0){
+            byteBuf.readBytes(bos,byteBuf.readableBytes());
+        }
+        System.out.println(bos.toString("UTF-8"));
+    }
+
 
     private User extractUser(FullHttpRequest fullRequest){
         HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(fullRequest);
         List<InterfaceHttpData> httpPostData = decoder.getBodyHttpDatas();
-        decoder.offer(fullRequest);
+//        decoder.offer(fullRequest);
         List<InterfaceHttpData> httpData = decoder.getBodyHttpDatas();
         Map<String,String> requestParams = new HashMap<>();
         httpData.forEach(param->{
