@@ -14,9 +14,16 @@ import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * <p><b>Description:</b>
@@ -30,7 +37,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class UserServer {
+public class UserServer implements ApplicationListener{
 
     @Autowired
     private UserServiceHandler userServiceHandler ;
@@ -41,9 +48,11 @@ public class UserServer {
     @Value("${user.service.server.port}")
     private  int port;
 
-//    public UserServer(int port){
-//        this.port = port;
-//    }
+    public UserServer(){
+
+    }
+
+
 
 
 
@@ -84,6 +93,22 @@ public class UserServer {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
             log.info(" HttpServer shutdownGracefully...");
+        }
+    }
+
+    /**
+     * Handle an application event.
+     *
+     * @param event the event to respond to
+     */
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        if(event instanceof ApplicationReadyEvent){
+            try {
+                this.run();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

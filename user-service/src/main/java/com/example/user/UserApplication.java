@@ -22,9 +22,9 @@ public class UserApplication {
 
         ConfigurableApplicationContext application = SpringApplication.run(UserApplication.class);
 
-        UserServer server= application.getBean(UserServer.class);
-
-        server.run();
+//        UserServer server= application.getBean(UserServer.class);
+//
+//        server.run();
 
     }
 
