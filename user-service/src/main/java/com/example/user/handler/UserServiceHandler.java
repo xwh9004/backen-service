@@ -3,7 +3,7 @@ package com.example.user.handler;
 import com.alibaba.fastjson.JSONObject;
 import com.example.user.entity.Result;
 import com.example.user.entity.User;
-import com.example.user.service.IUserService;
+import com.example.user.service.UserService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -51,7 +51,7 @@ public class UserServiceHandler extends ChannelInboundHandlerAdapter {
     public final String URI_USER="/user";
 
     @Autowired
-    public IUserService service;
+    public UserService service;
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
