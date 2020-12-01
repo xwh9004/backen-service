@@ -2,7 +2,7 @@ package com.example.user.service.impl;
 
 
 import com.example.user.entity.User;
-import com.example.user.service.IUserService;
+import com.example.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ import static com.example.user.sql.SqlStatements.*;
  */
 @Slf4j
 @Service
-public class UserServiceImpl implements IUserService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private DataSource dataSource;
