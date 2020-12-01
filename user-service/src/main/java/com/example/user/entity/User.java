@@ -18,9 +18,19 @@ import lombok.NoArgsConstructor;
 @Data
 public class User {
 
-    private int id;
+    private int userId;
+    private String userUuid;
+    private String userName;
+    private String portraitUrl;
+    private String loginPwd;
+    private String mobile;
+    private int status;
+    private String email;
+    private int points;
+    private int level;
+    private long createTime;
+    private long updateTime;
 
-    private String firstName;
 
-    private String lastName;
+
 }

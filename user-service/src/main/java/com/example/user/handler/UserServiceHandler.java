@@ -116,7 +116,7 @@ public class UserServiceHandler extends ChannelInboundHandlerAdapter {
         Result<User> result =null;
         if(uri.startsWith(URI_USER)){
            //---------------test coder start-------------
-            printRequetRaw(fullRequest);
+//            printRequestRaw(fullRequest);
             //---------------test coder end-------------
             //post or put
             if(uri.equals(URI_USER)){
@@ -128,11 +128,11 @@ public class UserServiceHandler extends ChannelInboundHandlerAdapter {
                 }
                 if(requestMethod.equals(HttpMethod.PUT)){
                     service.update(user);
-                    return Result.buildSuccess("更新成功",String.valueOf(user.getId()));
+                    return Result.buildSuccess("更新成功",String.valueOf(user.getUserId()));
                 }
                 if(requestMethod.equals(HttpMethod.POST)){
                     service.insert(user);
-                    return Result.buildSuccess("新增成功",String.valueOf(user.getId()));
+                    return Result.buildSuccess("新增成功",String.valueOf(user.getUserUuid()));
                 }
             }
             //  /user/{id}
@@ -152,7 +152,7 @@ public class UserServiceHandler extends ChannelInboundHandlerAdapter {
         return null;
     }
 
-    private void printRequetRaw(FullHttpRequest fullRequest) throws IOException {
+    private void printRequestRaw(FullHttpRequest fullRequest) throws IOException {
         ByteBuf byteBuf = fullRequest.copy().content();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         while(byteBuf.readableBytes()>0){
@@ -179,9 +179,8 @@ public class UserServiceHandler extends ChannelInboundHandlerAdapter {
         if(!requestParams.isEmpty()){
 
             User user = new User();
-            user.setId(Integer.valueOf(requestParams.get("id")).intValue());
-            user.setFirstName(requestParams.get("firstName"));
-            user.setLastName(requestParams.get("lastName"));
+
+            user.setUserName(requestParams.get("userName"));
             return user;
         }
         return null;

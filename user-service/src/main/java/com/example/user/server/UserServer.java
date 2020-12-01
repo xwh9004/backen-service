@@ -37,7 +37,7 @@ import javax.annotation.PostConstruct;
 
 @Slf4j
 @Component
-public class UserServer implements ApplicationListener{
+public class UserServer {
 
     @Autowired
     private UserServiceHandler userServiceHandler ;
@@ -47,9 +47,13 @@ public class UserServer implements ApplicationListener{
     }
     @Value("${user.service.server.port}")
     private  int port;
-
-    public UserServer(){
-
+    @PostConstruct
+    public void init()  {
+        try {
+            this.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -101,14 +105,14 @@ public class UserServer implements ApplicationListener{
      *
      * @param event the event to respond to
      */
-    @Override
-    public void onApplicationEvent(ApplicationEvent event) {
-        if(event instanceof ApplicationReadyEvent){
-            try {
-                this.run();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    @Override
+//    public void onApplicationEvent(ApplicationEvent event) {
+//        if(event instanceof ApplicationReadyEvent){
+//            try {
+//                this.run();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 }

@@ -11,11 +11,11 @@ package com.example.user.sql;
  */
 public interface SqlStatements {
 
-    final String INSERT_SQL = "INSERT INTO user (id,first_name,last_name) VALUES(?,?,?)";
+    final String INSERT_SQL = "INSERT INTO t_user (user_uuid,user_name, portrait_url,login_pwd, mobile,status,email,user_point,user_level, create_time,update_time) VALUES(?,?,null,null,null,1,null,0,0,?,?)";
 
-    final String UPDATE_SQL = "UPDATE user  SET user.first_name = ?,  user.last_name = ? WHERE user.id=?";
+    final String UPDATE_SQL = "UPDATE user  SET t_user.first_name = ?,  user.last_name = ? WHERE user.id=?";
 
-    final String DELETE_SQL = "DELETE FROM user WHERE id =?";
+    final String DELETE_SQL = "DELETE FROM t_user WHERE id =?";
 
-    final   String QUERY_SQL = "SELECT id,first_name as firstName,last_name as lastName from user where id=?";
+    final   String QUERY_SQL = "SELECT id,first_name as firstName,last_name as lastName from t_user where id=?";
 }

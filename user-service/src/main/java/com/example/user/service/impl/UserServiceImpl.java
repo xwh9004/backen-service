@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import static com.example.user.sql.SqlStatements.*;
 
@@ -39,23 +40,49 @@ public class UserServiceImpl implements IUserService {
         this.connection = dataSource.getConnection();
     }
 
+    /**
+     *     "INSERT INTO user
+     *     (user_uuid,user_name,
+     *      portrait_url,login_pwd,
+     *      mobile,status,email,
+     *      user_point,user_level,
+     *      create_time,update_time)
+     *      VALUES(?,?,null,null,null,1,null,0,0,?,?)";
+     * @param user
+     */
     public void insert(User user) {
         log.info("insert user ={}",user);
         try {
-            PreparedStatement prepareStatement = connection.prepareStatement(INSERT_SQL);
-            prepareStatement.setInt(1,user.getId());
-            prepareStatement.setString(2,user.getFirstName());
-            prepareStatement.setString(3,user.getLastName());
+            PreparedStatement prepareStatement = getConnection().prepareStatement(INSERT_SQL);
+            user.setUserUuid(UUID.randomUUID().toString().replace("-",""));
+            prepareStatement.setString(1,user.getUserUuid());
+            prepareStatement.setString(2,user.getUserName());
+            long createTime = System.currentTimeMillis();
+            user.setCreateTime(createTime);
+            user.setUpdateTime(createTime);
+            prepareStatement.setLong(3,user.getCreateTime());
+            prepareStatement.setLong(4,createTime);
             prepareStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    public Connection getConnection() {
+        try {
+            if(connection==null||connection.isClosed()){
+                connection = dataSource.getConnection();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return connection;
+    }
+
     public User select(int id) {
         log.info("select user id ={}",id);
 
-        try( PreparedStatement prepareStatement = connection.prepareStatement(QUERY_SQL);) {
+        try(PreparedStatement prepareStatement = getConnection().prepareStatement(QUERY_SQL);) {
 
             prepareStatement.setInt(1,id);
             ResultSet resultSet = prepareStatement.executeQuery();
@@ -64,7 +91,7 @@ public class UserServiceImpl implements IUserService {
                 int id1 = resultSet.getInt("id");
                 String  firstName = resultSet.getString("firstName");
                 String  lastName = resultSet.getString("lastName");
-                return new User(id1,firstName,lastName);
+                return new User();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -74,7 +101,7 @@ public class UserServiceImpl implements IUserService {
 
     public void delete(int id) {
 
-        try(PreparedStatement prepareStatement = connection.prepareStatement(DELETE_SQL);){
+        try(PreparedStatement prepareStatement = getConnection().prepareStatement(DELETE_SQL);){
             prepareStatement.setInt(1,id);
             prepareStatement.execute();
         } catch (SQLException e) {
@@ -83,10 +110,10 @@ public class UserServiceImpl implements IUserService {
     }
 
     public void update(User user) {
-        try (PreparedStatement prepareStatement = connection.prepareStatement(UPDATE_SQL);){
-            prepareStatement.setInt(3,user.getId());
-            prepareStatement.setString(1,user.getFirstName());
-            prepareStatement.setString(2,user.getLastName());
+        try (PreparedStatement prepareStatement = getConnection().prepareStatement(UPDATE_SQL);){
+//            prepareStatement.setInt(3,user.getId());
+//            prepareStatement.setString(1,user.getFirstName());
+//            prepareStatement.setString(2,user.getLastName());
             prepareStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
