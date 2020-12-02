@@ -29,9 +29,8 @@ import java.util.Map;
  * @classNmae DataSourceConfig
  */
 @Configuration
-public class DataSourceConfig implements ApplicationContextAware {
+public class DataSourceConfig {
 
-    private ApplicationContext context;
 
     @Bean("primaryDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.primary")
@@ -54,35 +53,10 @@ public class DataSourceConfig implements ApplicationContextAware {
 
     @Bean
     public JdbcTemplate jdbcTemplate(){
-
         //先配置默认数据源
         return new JdbcTemplate(primaryDataSource());
     }
-//    @Bean("primaryJdbcTemplate")
-//    public JdbcTemplate primaryJdbcTemplate(@Qualifier("primaryDataSource") DataSource dataSource){
-//        return new JdbcTemplate(dataSource);
-//    }
-//
-//    @Bean("replicationJdbcTemplate")
-//    public JdbcTemplate replicationJdbcTemplate(@Qualifier("replicationDataSource") DataSource dataSource){
-//        return new JdbcTemplate(dataSource);
-//    }
-    @Bean
-    public DynamicRoutingDataSource dynamicRoutingDataSource(){
-        DynamicRoutingDataSource routingDataSource = new DynamicRoutingDataSource();
 
-        Map<String, DataSource> dataSources = context.getBeansOfType(DataSource.class);
 
-        Map<Object, Object> routingDataSources =new HashMap<>();
 
-        routingDataSources.putAll(dataSources);
-        routingDataSource.setTargetDataSources(routingDataSources);
-        routingDataSource.afterPropertiesSet();
-        return routingDataSource;
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.context = applicationContext;
-    }
 }
