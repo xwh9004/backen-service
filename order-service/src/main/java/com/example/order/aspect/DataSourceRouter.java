@@ -10,9 +10,20 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Stream;
 
 /**
  * <p><b>Description:</b>
@@ -25,7 +36,13 @@ import org.springframework.util.StringUtils;
  */
 @Aspect
 @Component
-public class DataSourceRouter {
+public class DataSourceRouter implements ApplicationContextAware {
+
+    private ApplicationContext context;
+
+    private String primaryDataSourceName;
+
+    private List<String> replicationDataSourceNames = new ArrayList<>();
 
     @Autowired
     private DynamicRoutingDataSource sourceRouter;
@@ -61,15 +78,51 @@ public class DataSourceRouter {
 
         try{
             String dataSourceName = annotation.name();
+            boolean readyOnly =annotation.readOnly();
             if(StringUtils.hasText(dataSourceName)){
+                if(!replicationDataSourceNames.contains(dataSourceName)){
+                    throw new RuntimeException("dataSource named "+dataSourceName + "doesn't exist!");
+                }
                 sourceRouter.setRoutKey(dataSourceName);
+            }else if(readyOnly){
+                //只读 从库挑一个
+                sourceRouter.setRoutKey(getReplicationDataSourceKeyRandom());
             }else{
-                sourceRouter.setRoutKey("primaryDataSource");
+                sourceRouter.setRoutKey(primaryDataSourceName);
             }
 
             return joinPoint.proceed();
         }finally {
             sourceRouter.clearRoutKey();
         }
+    }
+
+    private String getReplicationDataSourceKeyRandom(){
+        Random rand = new Random();
+        return   replicationDataSourceNames.get(rand.nextInt(replicationDataSourceNames.size()));
+    }
+
+    private void getDataSourceKey() {
+        String[] dataSourceNames = this.context.getBeanNamesForType(DataSource.class);
+        Stream.of(dataSourceNames).forEach(name->{
+            if(name.startsWith("dynamicRoutingDataSource")){
+                return ;
+            }
+            if(name.startsWith("primary")){
+                this.primaryDataSourceName = name;
+            }else{
+                replicationDataSourceNames.add(name);
+            }
+        });
+
+    }
+
+
+
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.context = applicationContext;
+        getDataSourceKey();
     }
 }

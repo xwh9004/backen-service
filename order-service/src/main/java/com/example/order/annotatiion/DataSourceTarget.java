@@ -7,4 +7,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface DataSourceTarget {
     String name() default "";
+
+    boolean readOnly() default false;
 }

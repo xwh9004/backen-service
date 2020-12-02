@@ -40,12 +40,17 @@ public class DataSourceConfig implements ApplicationContextAware {
     }
 
 
-    @Bean("replicationDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.replication")
-    public DataSource replicationDataSource(){
+    @Bean("replicationDataSource1")
+    @ConfigurationProperties(prefix = "spring.datasource.replication1")
+    public DataSource replicationDataSource1(){
         return DataSourceBuilder.create().build();
     }
 
+    @Bean("replicationDataSource2")
+    @ConfigurationProperties(prefix = "spring.datasource.replication2")
+    public DataSource replicationDataSource2(){
+        return DataSourceBuilder.create().build();
+    }
 
     @Bean
     public JdbcTemplate jdbcTemplate(){
@@ -67,9 +72,10 @@ public class DataSourceConfig implements ApplicationContextAware {
         DynamicRoutingDataSource routingDataSource = new DynamicRoutingDataSource();
 
         Map<String, DataSource> dataSources = context.getBeansOfType(DataSource.class);
-        Map<Object, Object> routingDataSources =new HashMap<>();
-        routingDataSources.putAll(dataSources);
 
+        Map<Object, Object> routingDataSources =new HashMap<>();
+
+        routingDataSources.putAll(dataSources);
         routingDataSource.setTargetDataSources(routingDataSources);
         routingDataSource.afterPropertiesSet();
         return routingDataSource;

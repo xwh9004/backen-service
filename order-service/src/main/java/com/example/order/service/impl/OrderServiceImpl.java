@@ -105,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
         });
     }
 
-    @DataSourceTarget(name = "replicationDataSource")
+    @DataSourceTarget(readOnly = true)
     public Order query(Integer orderId) {
         Order order =new Order();
 

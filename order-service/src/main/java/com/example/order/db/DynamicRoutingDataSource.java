@@ -19,6 +19,9 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource {
 
 
 
+
+
+
     public DataSource getDataSource(){
         return determineTargetDataSource();
     }
@@ -29,8 +32,11 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource {
     }
 
     public void setRoutKey(String key){
+
         dataSourceKeys.set(key);
     }
+
+
 
     public void clearRoutKey(){
         dataSourceKeys.remove();
