@@ -1,5 +1,6 @@
 package com.example.order.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -42,9 +43,9 @@ public class DataSourceConfig {
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate(){
+    public JdbcTemplate jdbcTemplate(@Qualifier("shardingSphereDataSource") DataSource dataSource){
         //先配置默认数据源
-        return new JdbcTemplate(primaryDataSource());
+        return new JdbcTemplate(dataSource);
     }
 
 
