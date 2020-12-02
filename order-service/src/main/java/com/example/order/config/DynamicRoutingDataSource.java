@@ -1,4 +1,4 @@
-package com.example.order.db;
+package com.example.order.config;
 
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
@@ -16,10 +16,6 @@ import javax.sql.DataSource;
 public class DynamicRoutingDataSource extends AbstractRoutingDataSource {
 
     private ThreadLocal<String> dataSourceKeys = new ThreadLocal<String>();
-
-
-
-
 
 
     public DataSource getDataSource(){

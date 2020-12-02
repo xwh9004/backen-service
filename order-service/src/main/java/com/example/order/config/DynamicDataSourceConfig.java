@@ -1,11 +1,9 @@
 package com.example.order.config;
 
-import com.example.order.db.DynamicRoutingDataSource;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
