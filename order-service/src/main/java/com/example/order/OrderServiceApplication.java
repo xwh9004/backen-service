@@ -14,19 +14,21 @@ public class OrderServiceApplication {
 
     public static void main(String[] args) throws SQLException {
         ConfigurableApplicationContext application = SpringApplication.run(OrderServiceApplication.class);
-        DataSource primaryDataSource = application.getBean("primaryDataSource", DataSource.class);
-        DataSource replicationDataSource = application.getBean("replicationDataSource", DataSource.class);
+
 
         OrderService orderService = application.getBean(OrderService.class);
 
-        Order order =new Order();
-//        order.setUserId(1);
+        System.out.println(orderService.query(2));
+//        Order order =new Order();
+//        order.setUserId(3);
 //        order.setProductId(1);
-//        order.setProductAmount(1);
+//        order.setProductAmount(2);
 //        order.setProductUnitPrice(88.90);
-//        order.setOrderTotalPrice(88.90);
+//        order.setOrderTotalPrice(88.90*order.getProductAmount());
 //        orderService.save(order);
-        System.out.println(orderService.query(1));
+//        System.out.println(orderService.query(2));
+
+        application.close();
 
     }
 }

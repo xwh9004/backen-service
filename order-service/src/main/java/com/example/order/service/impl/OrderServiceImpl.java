@@ -1,7 +1,11 @@
 package com.example.order.service.impl;
 
+import com.example.order.annotatiion.DataSourceTarget;
+import com.example.order.db.DynamicRoutingDataSource;
 import com.example.order.entity.Order;
 import com.example.order.service.OrderService;
+import com.zaxxer.hikari.HikariDataSource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,6 +14,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,18 +33,25 @@ import static com.example.order.sql.SqlStatements.SELECT_SQL;
  * @version V0.1
  * @classNmae OrderServiceImpl
  */
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    @Qualifier("primaryJdbcTemplate")
     @Autowired
-    private JdbcTemplate primaryJdbcTemplate;
+    private DynamicRoutingDataSource dynamicDataSource;
 
-    @Qualifier("replicationJdbcTemplate")
     @Autowired
-    private JdbcTemplate replicationJdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
+//    @Qualifier("primaryJdbcTemplate")
+//    @Autowired
+//    private JdbcTemplate primaryJdbcTemplate;
+//
+//    @Qualifier("replicationJdbcTemplate")
+//    @Autowired
+//    private JdbcTemplate replicationJdbcTemplate;
 
+    @DataSourceTarget(name = "primaryDataSource")
     public void save(Order order) {
 
         //insert into t_order
@@ -49,7 +61,29 @@ public class OrderServiceImpl implements OrderService {
         // values(?,?,?,
         // ?,?,?,
         // 0,null,?,?)
-        primaryJdbcTemplate.update(new PreparedStatementCreator() {
+//        primaryJdbcTemplate.update(new PreparedStatementCreator() {
+//            @Override
+//            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+//                PreparedStatement prepareStatement = connection.prepareStatement(INSERT_SQL);
+//                order.setNo(UUID.randomUUID().toString());
+//                prepareStatement.setString(1,order.getNo());
+//                prepareStatement.setInt(2,order.getProductId());
+//                prepareStatement.setDouble(3,order.getProductAmount());
+//                prepareStatement.setDouble(4,order.getProductUnitPrice());
+//                prepareStatement.setDouble(5,order.getOrderTotalPrice());
+//                prepareStatement.setInt(6,order.getUserId());
+//                long createTime = System.currentTimeMillis();
+//                order.setCreateTime(createTime);
+//                order.setUpdateTime(createTime);
+//
+//                prepareStatement.setLong(7,order.getCreateTime());
+//                prepareStatement.setLong(8,order.getUpdateTime());
+//                return prepareStatement;
+//            }
+//        });
+        jdbcTemplate.setDataSource(dynamicDataSource.getDataSource());
+        log.info("从数据库写入数据 url:"+((HikariDataSource)jdbcTemplate.getDataSource()).getJdbcUrl());
+        jdbcTemplate.update(new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
                 PreparedStatement prepareStatement = connection.prepareStatement(INSERT_SQL);
@@ -71,10 +105,36 @@ public class OrderServiceImpl implements OrderService {
         });
     }
 
+    @DataSourceTarget(name = "replicationDataSource")
     public Order query(Integer orderId) {
         Order order =new Order();
 
-        replicationJdbcTemplate.query(new PreparedStatementCreator() {
+//        replicationJdbcTemplate.query(new PreparedStatementCreator() {
+//
+//            @Override
+//            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+//                PreparedStatement prepareStatement = connection.prepareStatement(SELECT_SQL);
+//
+//                prepareStatement.setInt(1, orderId);
+//
+//                return prepareStatement;
+//            }
+//        }, new RowCallbackHandler() {
+//            @Override
+//            public void processRow(ResultSet resultSet) throws SQLException {
+//                if(resultSet.first()){
+//                    order.setId(resultSet.getInt("order_id"));
+//                    order.setNo(resultSet.getString("order_no"));
+//                    order.setProductAmount(resultSet.getInt("product_amount"));
+//
+//                }
+//            }
+//        });
+        jdbcTemplate.setDataSource(dynamicDataSource.getDataSource());
+
+        log.info("从数据库查询数据 url:"+((HikariDataSource)jdbcTemplate.getDataSource()).getJdbcUrl());
+
+        jdbcTemplate.query(new PreparedStatementCreator() {
 
             @Override
             public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
@@ -91,7 +151,12 @@ public class OrderServiceImpl implements OrderService {
                     order.setId(resultSet.getInt("order_id"));
                     order.setNo(resultSet.getString("order_no"));
                     order.setProductAmount(resultSet.getInt("product_amount"));
-
+                    order.setProductId(resultSet.getInt("product_id"));
+                    order.setUserId(resultSet.getInt("user_id"));
+                    order.setOrderTotalPrice(resultSet.getDouble("order_total_price"));
+                    order.setProductUnitPrice(resultSet.getDouble("product_unit_price"));
+                    order.setCreateTime(resultSet.getLong("create_time"));
+                    order.setUpdateTime(resultSet.getLong("update_time"));
                 }
             }
         });
