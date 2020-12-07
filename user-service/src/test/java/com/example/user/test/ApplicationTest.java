@@ -58,9 +58,9 @@ public class ApplicationTest {
         PreparedStatement statements = connection.prepareStatement(insert_order_sql);
         Random random =new Random();
         long totalTime = 0;
-        for(int i=0;i<20;i++){
+        for(int i=1;i<=10;i++){
 
-            for (int j=0;j<50000;j++){
+            for (int j=0;j<100000;j++){
                 statements.setString(1,UUID.randomUUID().toString());
                 int productId = random.nextInt(10);
                 statements.setInt(2,products[productId]);
@@ -73,6 +73,7 @@ public class ApplicationTest {
                 statements.addBatch();
             }
             long start = System.currentTimeMillis();
+
             statements.executeBatch();
             connection.commit();
             long perTimes=(System.currentTimeMillis()-start);
