@@ -29,15 +29,20 @@ public class DataSourceConfig {
         return DataSourceBuilder.create().build();
     }
 
+    @Bean("primaryDataSource1")
+    @ConfigurationProperties(prefix = "spring.datasource.primary1")
+    public DataSource primaryDataSource1(){
+        return DataSourceBuilder.create().build();
+    }
 
     @Bean("replicationDataSource1")
-    @ConfigurationProperties(prefix = "spring.datasource.replication1")
+    @ConfigurationProperties(prefix = "spring.datasource.replication-order")
     public DataSource replicationDataSource1(){
         return DataSourceBuilder.create().build();
     }
 
     @Bean("replicationDataSource2")
-    @ConfigurationProperties(prefix = "spring.datasource.replication2")
+    @ConfigurationProperties(prefix = "spring.datasource.replication-order1")
     public DataSource replicationDataSource2(){
         return DataSourceBuilder.create().build();
     }
