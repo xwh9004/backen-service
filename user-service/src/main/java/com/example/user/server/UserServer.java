@@ -50,7 +50,7 @@ public class UserServer {
     @PostConstruct
     public void init()  {
         try {
-//            this.run();
+            this.run();
         } catch (Exception e) {
             e.printStackTrace();
         }

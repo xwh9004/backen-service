@@ -17,5 +17,5 @@ public interface SqlStatements {
 
     final String DELETE_SQL = "DELETE FROM t_user WHERE id =?";
 
-    final   String QUERY_SQL = "SELECT id,first_name as firstName,last_name as lastName from t_user where id=?";
+    final   String QUERY_SQL = "SELECT user_id ,user_name as userName,mobile as mobile from t_user where user_id=?";
 }

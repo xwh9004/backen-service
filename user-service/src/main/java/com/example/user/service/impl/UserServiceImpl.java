@@ -88,9 +88,13 @@ public class UserServiceImpl implements UserService {
             ResultSet resultSet = prepareStatement.executeQuery();
 
             if(resultSet.first()){
-                int id1 = resultSet.getInt("id");
-                String  firstName = resultSet.getString("firstName");
-                String  lastName = resultSet.getString("lastName");
+                int id1 = resultSet.getInt("user_id");
+                String  userName = resultSet.getString("userName");
+                String  mobile = resultSet.getString("mobile");
+                User user =new User();
+                user.setUserName(userName);
+                user.setUserId(id1);
+                user.setMobile(mobile);
                 return new User();
             }
         } catch (SQLException e) {

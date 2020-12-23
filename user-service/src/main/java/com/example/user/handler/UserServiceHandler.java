@@ -179,7 +179,7 @@ public class UserServiceHandler extends ChannelInboundHandlerAdapter {
         if(!requestParams.isEmpty()){
 
             User user = new User();
-
+            user.setUserId(Integer.valueOf(requestParams.get("userId")));
             user.setUserName(requestParams.get("userName"));
             return user;
         }
