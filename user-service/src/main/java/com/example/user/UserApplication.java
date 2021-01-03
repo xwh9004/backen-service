@@ -1,6 +1,8 @@
 package com.example.user;
 
 import com.example.user.server.UserServer;
+import org.mybatis.spring.annotation.MapperScan;
+import org.mybatis.spring.annotation.MapperScans;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -14,6 +16,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @version V0.1
  * @classNmae UserApplication
  */
+@MapperScan("com.example.user.mapper")
 @SpringBootApplication(scanBasePackageClasses =UserApplication.class )
 public class UserApplication {
 

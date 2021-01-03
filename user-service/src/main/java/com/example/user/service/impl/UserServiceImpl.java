@@ -2,6 +2,7 @@ package com.example.user.service.impl;
 
 
 import com.example.user.entity.User;
+import com.example.user.mapper.UserMapper;
 import com.example.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class UserServiceImpl implements UserService {
 
     private Connection connection;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @PostConstruct
     public void init() throws SQLException {
         this.connection = dataSource.getConnection();
@@ -52,6 +56,11 @@ public class UserServiceImpl implements UserService {
      */
     public void insert(User user) {
         log.info("insert user ={}",user);
+        userMapper.insert(user);
+//        insertByStatement(user);
+    }
+
+    private void insertByStatement(User user) {
         try {
             PreparedStatement prepareStatement = getConnection().prepareStatement(INSERT_SQL);
             user.setUserUuid(UUID.randomUUID().toString().replace("-",""));
@@ -82,29 +91,38 @@ public class UserServiceImpl implements UserService {
     public User select(int id) {
         log.info("select user id ={}",id);
 
+        if (selectByStatement(id)) return new User();
+        return null;
+    }
+
+    private boolean selectByStatement(int id) {
         try(PreparedStatement prepareStatement = getConnection().prepareStatement(QUERY_SQL);) {
 
             prepareStatement.setInt(1,id);
             ResultSet resultSet = prepareStatement.executeQuery();
 
             if(resultSet.first()){
-                int id1 = resultSet.getInt("user_id");
+                long id1 = resultSet.getLong("user_id");
                 String  userName = resultSet.getString("userName");
                 String  mobile = resultSet.getString("mobile");
                 User user =new User();
                 user.setUserName(userName);
                 user.setUserId(id1);
                 user.setMobile(mobile);
-                return new User();
+                return true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return false;
     }
 
     public void delete(int id) {
 
+        deleteByStatement(id);
+    }
+
+    private void deleteByStatement(int id) {
         try(PreparedStatement prepareStatement = getConnection().prepareStatement(DELETE_SQL);){
             prepareStatement.setInt(1,id);
             prepareStatement.execute();
@@ -114,6 +132,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public void update(User user) {
+        updateByStatement();
+    }
+
+    private void updateByStatement() {
         try (PreparedStatement prepareStatement = getConnection().prepareStatement(UPDATE_SQL);){
 //            prepareStatement.setInt(3,user.getId());
 //            prepareStatement.setString(1,user.getFirstName());
