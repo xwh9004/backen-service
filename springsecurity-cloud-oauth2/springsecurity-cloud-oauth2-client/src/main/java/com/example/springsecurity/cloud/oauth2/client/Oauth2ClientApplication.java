@@ -1,4 +1,4 @@
-package com.example.springsecurity.cloud.oauth2.server;
+package com.example.springsecurity.cloud.oauth2.client;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,9 +9,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @description:
  */
 @SpringBootApplication
-public class SpringSecurityOauth2ServerApplication {
+public class Oauth2ClientApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringSecurityOauth2ServerApplication.class);
+        SpringApplication.run(Oauth2ClientApplication.class);
     }
 }

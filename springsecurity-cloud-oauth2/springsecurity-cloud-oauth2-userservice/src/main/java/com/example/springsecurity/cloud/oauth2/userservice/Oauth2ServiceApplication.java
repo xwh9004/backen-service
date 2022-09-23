@@ -9,9 +9,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @description:
  */
 @SpringBootApplication
-public class SpringSecurityOauth2ServiceApplication {
+public class Oauth2ServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringSecurityOauth2ServiceApplication.class);
+        SpringApplication.run(Oauth2ServiceApplication.class);
     }
 }

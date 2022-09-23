@@ -10,6 +10,7 @@
     <modules>
         <module>springsecurity-cloud-oauth2-server</module>
         <module>springsecurity-cloud-oauth2-userservice</module>
+        <module>springsecurity-cloud-oauth2-client</module>
     </modules>
     <packaging>pom</packaging>
 
